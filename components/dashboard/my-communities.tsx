@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Users, Settings } from "lucide-react"
+import { Plus, Users } from "lucide-react"
 import { CreateCommunityDialog } from "@/components/dashboard/create-community-dialog"
 import type { Membership } from "@/lib/types"
 
@@ -91,18 +91,9 @@ function CommunityCard({ membership, isOwner }: { membership: Membership; isOwne
           <Users className="h-4 w-4" />
           <span>{community.member_count || 0} members</span>
         </div>
-        <div className="flex gap-2">
-          {isOwner && (
-            <Button size="sm" variant="ghost" asChild>
-              <Link href={`/community/${community.id}/settings`}>
-                <Settings className="h-4 w-4" />
-              </Link>
-            </Button>
-          )}
-          <Button size="sm" asChild>
-            <Link href={`/community/${community.id}`}>Open</Link>
-          </Button>
-        </div>
+        <Button size="sm" asChild>
+          <Link href={`/community/${community.id}`}>Open</Link>
+        </Button>
       </CardFooter>
     </Card>
   )

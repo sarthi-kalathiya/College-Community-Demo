@@ -27,22 +27,31 @@ export function CommunityFeed({ communityId, userId, userProfile, isCreator }: C
   const supabase = createClient()
 
   const fetchPosts = useCallback(async () => {
-    const { data } = await supabase
-      .from("posts")
-      .select(`
-        *,
-        author:profiles!posts_author_id_fkey(*),
-        comments(count),
-        likes(count)
-      `)
-      .eq("community_id", communityId)
-      .order("is_pinned", { ascending: false })
-      .order("created_at", { ascending: false })
+    // Parallel fetch: posts and user likes at the same time for better performance
+    const [postsResult, likesResult] = await Promise.all([
+      supabase
+        .from("posts")
+        .select(`
+          *,
+          author:profiles!posts_author_id_fkey(id, display_name, avatar_url),
+          comments(count),
+          likes(count)
+        `)
+        .eq("community_id", communityId)
+        .order("is_pinned", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(50), // Limit posts for faster loading
+      
+      supabase
+        .from("likes")
+        .select("post_id")
+        .eq("user_id", userId),
+    ])
+
+    const { data } = postsResult
+    const { data: userLikes } = likesResult
 
     if (data) {
-      // Check which posts the user has liked
-      const { data: userLikes } = await supabase.from("likes").select("post_id").eq("user_id", userId)
-
       const likedPostIds = new Set(userLikes?.map((l) => l.post_id) || [])
 
       const formattedPosts: Post[] = data.map((p) => ({
@@ -217,43 +226,51 @@ function PostCard({ post, userId, isCreator, onLike, onDelete, onPin, communityI
   const loadComments = async () => {
     if (!showComments) {
       setIsLoadingComments(true)
+      setShowComments(true) // Show comments section immediately for better UX
+      
+      // Only fetch essential profile fields for faster loading
       const { data } = await supabase
         .from("comments")
         .select(`
           *,
-          author:profiles!comments_author_id_fkey(*)
+          author:profiles!comments_author_id_fkey(id, display_name, avatar_url)
         `)
         .eq("post_id", post.id)
         .order("created_at", { ascending: true })
+        .limit(50) // Limit comments for performance
 
       if (data) setComments(data as Comment[])
       setIsLoadingComments(false)
+    } else {
+      setShowComments(false)
     }
-    setShowComments(!showComments)
   }
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return
 
-    await supabase.from("comments").insert({
+    const { error } = await supabase.from("comments").insert({
       post_id: post.id,
       author_id: userId,
       content: newComment.trim(),
     })
 
-    setNewComment("")
+    if (!error) {
+      setNewComment("")
+      // Optimistically add the comment, then refresh
+      // Reload comments with limited fields
+      const { data } = await supabase
+        .from("comments")
+        .select(`
+          *,
+          author:profiles!comments_author_id_fkey(id, display_name, avatar_url)
+        `)
+        .eq("post_id", post.id)
+        .order("created_at", { ascending: true })
+        .limit(50)
 
-    // Reload comments
-    const { data } = await supabase
-      .from("comments")
-      .select(`
-        *,
-        author:profiles!comments_author_id_fkey(*)
-      `)
-      .eq("post_id", post.id)
-      .order("created_at", { ascending: true })
-
-    if (data) setComments(data as Comment[])
+      if (data) setComments(data as Comment[])
+    }
   }
 
   return (

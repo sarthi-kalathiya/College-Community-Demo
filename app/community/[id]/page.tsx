@@ -17,49 +17,64 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   } = await supabase.auth.getUser()
   if (!user) redirect("/auth/login")
 
-  // Fetch community details
-  const { data: community, error } = await supabase
-    .from("communities")
-    .select(`
-      *,
-      creator:profiles!communities_creator_id_fkey(*)
-    `)
-    .eq("id", id)
-    .single()
+  // Parallelize all data fetching for better performance
+  const [communityResult, membershipResult, membersResult, leaderboardResult, userProfileResult] = await Promise.all([
+    // Fetch community details (only essential creator fields)
+    supabase
+      .from("communities")
+      .select(`
+        *,
+        creator:profiles!communities_creator_id_fkey(id, display_name, avatar_url)
+      `)
+      .eq("id", id)
+      .single(),
+    
+    // Check if user is a member
+    supabase
+      .from("memberships")
+      .select("id, role, joined_at")
+      .eq("community_id", id)
+      .eq("user_id", user.id)
+      .single(),
+    
+    // Fetch members list (limited to 20 for faster loading, only essential fields)
+    supabase
+      .from("memberships")
+      .select(`
+        id,
+        role,
+        joined_at,
+        profile:profiles(id, display_name, avatar_url)
+      `)
+      .eq("community_id", id)
+      .order("joined_at", { ascending: true })
+      .limit(20),
+    
+    // Fetch leaderboard
+    supabase.rpc("get_community_leaderboard", {
+      community_uuid: id,
+      limit_count: 10,
+    }),
+    
+    // Get user's profile (only essential fields)
+    supabase
+      .from("profiles")
+      .select("id, display_name, avatar_url, bio")
+      .eq("id", user.id)
+      .single(),
+  ])
 
+  const { data: community, error } = communityResult
   if (error || !community) notFound()
 
-  // Check if user is a member
-  const { data: membership } = await supabase
-    .from("memberships")
-    .select("*")
-    .eq("community_id", id)
-    .eq("user_id", user.id)
-    .single()
+  const { data: membership } = membershipResult
+  const { data: members } = membersResult
+  const { data: leaderboard } = leaderboardResult
+  const { data: userProfile } = userProfileResult
 
   // If not a member and community requires payment, show join page
   const isCreator = community.creator_id === user.id
   const isMember = !!membership || isCreator
-
-  // Fetch members list
-  const { data: members } = await supabase
-    .from("memberships")
-    .select(`
-      *,
-      profile:profiles(*)
-    `)
-    .eq("community_id", id)
-    .order("joined_at", { ascending: true })
-    .limit(50)
-
-  // Fetch leaderboard
-  const { data: leaderboard } = await supabase.rpc("get_community_leaderboard", {
-    community_uuid: id,
-    limit_count: 10,
-  })
-
-  // Get user's profile
-  const { data: userProfile } = await supabase.from("profiles").select("*").eq("id", user.id).single()
 
   return (
     <div className="min-h-screen bg-muted/30">
