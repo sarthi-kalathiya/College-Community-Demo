@@ -16,6 +16,11 @@ export function CommunitiesGrid({ communities }: CommunitiesGridProps) {
       <div className="mb-10 text-center">
         <h2 className="mb-3 text-3xl font-bold">Discover Communities</h2>
         <p className="text-muted-foreground">Find your people and join the conversation</p>
+        <div className="mt-4">
+          <Button variant="outline" asChild>
+            <Link href="/community">Explore All Communities</Link>
+          </Button>
+        </div>
       </div>
 
       {communities.length === 0 ? (

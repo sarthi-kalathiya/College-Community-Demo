@@ -20,9 +20,14 @@ export function LandingHeader({ user }: LandingHeaderProps) {
 
         <nav className="flex items-center gap-4">
           {user ? (
-            <Button asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
+            <>
+              <Button variant="ghost" asChild>
+                <Link href="/community">Explore</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            </>
           ) : (
             <>
               <Button variant="ghost" asChild>

@@ -38,7 +38,9 @@ export default function SignUpPage() {
       if (response.needsEmailConfirmation) {
         setEmailConfirmationPending(true)
       } else {
-        router.push("/dashboard")
+        // Redirect admins to /admin, regular users to /dashboard
+        const redirectPath = response.user.role === "admin" ? "/admin" : "/dashboard"
+        router.push(redirectPath)
       }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")

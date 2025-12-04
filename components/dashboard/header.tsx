@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Users, LogOut, Settings, Home } from "lucide-react"
+import { Users, LogOut, Settings, Home, Shield } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import type { User } from "@supabase/supabase-js"
 import type { Profile } from "@/lib/types"
@@ -19,9 +19,10 @@ import type { Profile } from "@/lib/types"
 interface DashboardHeaderProps {
   user: User
   profile: Profile | null
+  isAdmin?: boolean
 }
 
-export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
+export function DashboardHeader({ user, profile, isAdmin }: DashboardHeaderProps) {
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -64,6 +65,14 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
                 <p className="text-sm font-medium">{profile?.display_name || "User"}</p>
                 <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">
+                    <Shield className="mr-2 h-4 w-4" />
+                    Admin Dashboard
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/settings">

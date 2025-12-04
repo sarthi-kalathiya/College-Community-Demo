@@ -27,7 +27,9 @@ export default function LoginPage() {
     try {
       const response = await authAPI.login(email, password)
       console.log("Login successful:", response.user)
-      router.push("/dashboard")
+      // Redirect admins to /admin, regular users to /dashboard
+      const redirectPath = response.user.role === "admin" ? "/admin" : "/dashboard"
+      router.push(redirectPath)
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "An error occurred"
       if (message.toLowerCase().includes("invalid") || message.toLowerCase().includes("credentials")) {

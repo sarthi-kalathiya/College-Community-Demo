@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, Lock } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Users, Lock, Clock } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import type { Community } from "@/lib/types"
 
@@ -15,14 +15,12 @@ interface JoinCommunityCardProps {
 
 export function JoinCommunityCard({ community, userId }: JoinCommunityCardProps) {
   const [isJoining, setIsJoining] = useState(false)
-  const router = useRouter()
 
   const isFree = community.price_in_cents === 0
 
   const handleJoin = async () => {
     if (!isFree) {
-      // For paid communities, redirect to checkout (implemented in next task)
-      router.push(`/community/${community.id}/checkout`)
+      // Paid communities are coming soon - don't redirect
       return
     }
 
@@ -35,7 +33,7 @@ export function JoinCommunityCard({ community, userId }: JoinCommunityCardProps)
       role: "member",
     })
 
-    router.refresh()
+    window.location.reload()
   }
 
   return (
@@ -74,7 +72,21 @@ export function JoinCommunityCard({ community, userId }: JoinCommunityCardProps)
             </div>
           </div>
 
-          <Button className="w-full" size="lg" onClick={handleJoin} disabled={isJoining}>
+          {!isFree && (
+            <Alert className="mb-4">
+              <Clock className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Coming Soon!</strong> Paid memberships are currently under development.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          <Button 
+            className="w-full" 
+            size="lg" 
+            onClick={handleJoin} 
+            disabled={isJoining || !isFree}
+          >
             {isJoining ? (
               "Joining..."
             ) : isFree ? (
@@ -84,8 +96,8 @@ export function JoinCommunityCard({ community, userId }: JoinCommunityCardProps)
               </>
             ) : (
               <>
-                <Lock className="mr-2 h-4 w-4" />
-                Subscribe to Join
+                <Clock className="mr-2 h-4 w-4" />
+                Coming Soon
               </>
             )}
           </Button>
