@@ -1,14 +1,18 @@
 # Community platform MVP
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
-
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/lwjGLvQYnhC)
 
 ## Overview
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+A community platform MVP built with Next.js, featuring user authentication, community management, and interactive features.
+
+## Features
+
+- User authentication and profile management
+- Community creation and management
+- Community membership and interactions
+- Dashboard for managing communities
+- Responsive design with modern UI components
 
 ## Deployment
 
@@ -16,15 +20,17 @@ Your project is live at:
 
 **[https://vercel.com](https://vercel.com)**
 
-## Build your app
+## Tech Stack
 
-Continue building your app on:
+- Next.js
+- TypeScript
+- Supabase
+- Stripe
+- Tailwind CSS
 
-**[https://v0.app/chat/lwjGLvQYnhC](https://v0.app/chat/lwjGLvQYnhC)**
+## Getting Started
 
-## How It Works
-
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+1. Clone the repository
+2. Install dependencies: `pnpm install`
+3. Set up environment variables
+4. Run the development server: `pnpm dev`
