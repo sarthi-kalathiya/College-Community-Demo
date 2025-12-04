@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
 import { isAdmin } from "@/lib/admin"
 import { NextResponse } from "next/server"
+import { createClient as createServiceClient } from "@supabase/supabase-js"
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -10,12 +10,22 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     const { id } = await params
-    const supabase = await createClient()
+
+    // Use service role client for admin operations to bypass RLS
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
+    }
+
+    const supabaseAdmin = createServiceClient(supabaseUrl, supabaseServiceKey)
 
     // Delete the user's profile (cascade will handle related data)
-    const { error } = await supabase.from("profiles").delete().eq("id", id)
+    const { error } = await supabaseAdmin.from("profiles").delete().eq("id", id)
 
     if (error) {
+      console.error("Delete user error:", error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 

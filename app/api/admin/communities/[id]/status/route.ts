@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
 import { isAdmin } from "@/lib/admin"
 import { NextResponse } from "next/server"
+import { createClient as createServiceClient } from "@supabase/supabase-js"
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -19,9 +19,17 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       )
     }
 
-    const supabase = await createClient()
+    // Use service role client for admin operations to bypass RLS
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-    const { data: community, error } = await supabase
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
+    }
+
+    const supabaseAdmin = createServiceClient(supabaseUrl, supabaseServiceKey)
+
+    const { data: community, error } = await supabaseAdmin
       .from("communities")
       .update({ status, updated_at: new Date().toISOString() })
       .eq("id", id)
@@ -29,6 +37,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       .single()
 
     if (error) {
+      console.error("Supabase update error:", error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 

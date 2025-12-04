@@ -178,8 +178,19 @@ export function AdminUsers() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive text-destructive-foreground">
-                {isDeleting ? "Deleting..." : "Delete"}
+              <AlertDialogAction 
+                onClick={handleDelete} 
+                disabled={isDeleting} 
+                className="bg-destructive text-white hover:bg-destructive/90 hover:text-white focus:ring-destructive disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <span className="flex items-center gap-2 text-white">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Deleting...
+                  </span>
+                ) : (
+                  <span className="text-white">Delete</span>
+                )}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
