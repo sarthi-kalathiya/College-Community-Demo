@@ -25,6 +25,17 @@ export async function updateSession(request: NextRequest) {
     },
   )
 
+  // Refresh the session to ensure we have the latest auth state
+  // This ensures cookies are properly set before checking user
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  
+  // If session exists, refresh it to update cookies
+  if (session) {
+    await supabase.auth.refreshSession(session)
+  }
+  
   const {
     data: { user },
   } = await supabase.auth.getUser()

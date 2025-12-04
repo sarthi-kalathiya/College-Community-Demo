@@ -15,7 +15,10 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) redirect("/auth/login")
+  
+  if (!user) {
+    redirect("/auth/login")
+  }
 
   // Parallelize all data fetching for better performance
   const [communityResult, membershipResult, membersResult, leaderboardResult, userProfileResult] = await Promise.all([
@@ -87,7 +90,25 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
       />
       <CommunityContent
         community={community as Community}
-        members={(members || []).map((m) => m.profile as Profile)}
+        members={(members || [])
+          .filter((m) => m.profile !== null && m.profile !== undefined)
+          .map((m) => {
+            const profile = Array.isArray(m.profile) ? m.profile[0] : m.profile
+            if (!profile || typeof profile !== 'object' || !('id' in profile)) {
+              return null
+            }
+            return {
+              id: (profile as { id: string }).id || "",
+              email: "",
+              display_name: (profile as { display_name?: string }).display_name || "",
+              avatar_url: (profile as { avatar_url?: string | null }).avatar_url || null,
+              bio: null,
+              role: "user" as const,
+              created_at: "",
+              updated_at: "",
+            } as Profile
+          })
+          .filter((p): p is Profile => p !== null)}
         leaderboard={(leaderboard || []) as LeaderboardEntry[]}
         isMember={isMember}
         isCreator={isCreator}
