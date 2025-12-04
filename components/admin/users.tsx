@@ -78,7 +78,7 @@ export function AdminUsers() {
         <CardTitle>Users Management</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -94,7 +94,7 @@ export function AdminUsers() {
               setRoleFilter(e.target.value)
               setPage(1)
             }}
-            className="px-3 py-2 border rounded-md"
+            className="px-3 py-2 border rounded-md sm:w-auto w-full"
           >
             <option value="">All Roles</option>
             <option value="user">User</option>
@@ -110,38 +110,38 @@ export function AdminUsers() {
           <div className="text-center py-12 text-muted-foreground">No users found</div>
         ) : (
           <>
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full">
+            <div className="border rounded-lg overflow-x-auto">
+              <table className="w-full min-w-[640px]">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Email</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Role</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Communities</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Joined</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Name</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Email</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Role</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Communities</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium hidden sm:table-cell">Joined</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.id} className="border-t">
-                      <td className="px-4 py-3">{user.name || "Unknown"}</td>
-                      <td className="px-4 py-3">{user.email}</td>
-                      <td className="px-4 py-3">
-                        <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                      <td className="px-2 sm:px-4 py-3 text-sm">{user.name || "Unknown"}</td>
+                      <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm break-all">{user.email}</td>
+                      <td className="px-2 sm:px-4 py-3">
+                        <Badge variant={user.role === "admin" ? "default" : "secondary"} className="text-xs">
                           {user.role}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3">{user.communitiesCount}</td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground">
+                      <td className="px-2 sm:px-4 py-3 text-sm">{user.communitiesCount}</td>
+                      <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm text-muted-foreground hidden sm:table-cell">
                         {new Date(user.joinedAt).toLocaleDateString()}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 sm:px-4 py-3">
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => setDeleteUserId(user.id)}
-                          className="text-destructive hover:text-destructive"
+                          className="text-destructive hover:text-destructive h-8 w-8"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -152,15 +152,25 @@ export function AdminUsers() {
               </table>
             </div>
 
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Page {page} of {totalPages}
               </p>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setPage((p) => Math.max(1, p - 1))} 
+                  disabled={page === 1}
+                  className="flex-1 sm:flex-initial text-xs sm:text-sm"
+                >
                   Previous
                 </Button>
-                <Button variant="outline" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
+                  disabled={page === totalPages}
+                  className="flex-1 sm:flex-initial text-xs sm:text-sm"
+                >
                   Next
                 </Button>
               </div>

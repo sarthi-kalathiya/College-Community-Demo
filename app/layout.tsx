@@ -12,24 +12,6 @@ export const metadata: Metadata = {
   title: "Communities - Where communities come together",
   description:
     "Create, join, and engage with communities that matter to you. Share ideas, connect with like-minded people, and build something meaningful.",
-  generator: "v0.app",
-  icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
-  },
 }
 
 export default function RootLayout({

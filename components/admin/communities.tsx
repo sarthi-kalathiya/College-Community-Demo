@@ -83,7 +83,7 @@ export function AdminCommunities() {
         <CardTitle>Communities Management</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -99,7 +99,7 @@ export function AdminCommunities() {
               setStatusFilter(e.target.value)
               setPage(1)
             }}
-            className="px-3 py-2 border rounded-md"
+            className="px-3 py-2 border rounded-md sm:w-auto w-full"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -116,34 +116,34 @@ export function AdminCommunities() {
           <div className="text-center py-12 text-muted-foreground">No communities found</div>
         ) : (
           <>
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full">
+            <div className="border rounded-lg overflow-x-auto">
+              <table className="w-full min-w-[640px]">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Name</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Creator</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Members</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Revenue</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Status</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium">Actions</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Name</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium hidden sm:table-cell">Creator</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Members</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium hidden md:table-cell">Revenue</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Status</th>
+                    <th className="px-2 sm:px-4 py-3 text-left text-xs sm:text-sm font-medium">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {communities.map((community) => (
                     <tr key={community.id} className="border-t">
-                      <td className="px-4 py-3 font-medium">{community.name}</td>
-                      <td className="px-4 py-3">{community.creator || "Unknown"}</td>
-                      <td className="px-4 py-3">{community.memberCount}</td>
-                      <td className="px-4 py-3">${community.revenue.toFixed(2)}</td>
-                      <td className="px-4 py-3">
-                        <Badge variant={getStatusBadgeVariant(community.status)}>
+                      <td className="px-2 sm:px-4 py-3 text-sm font-medium">{community.name}</td>
+                      <td className="px-2 sm:px-4 py-3 text-xs sm:text-sm hidden sm:table-cell">{community.creator || "Unknown"}</td>
+                      <td className="px-2 sm:px-4 py-3 text-sm">{community.memberCount}</td>
+                      <td className="px-2 sm:px-4 py-3 text-sm hidden md:table-cell">${community.revenue.toFixed(2)}</td>
+                      <td className="px-2 sm:px-4 py-3">
+                        <Badge variant={getStatusBadgeVariant(community.status)} className="text-xs">
                           {community.status}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-2 sm:px-4 py-3">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" disabled={updatingStatus === community.id}>
+                            <Button variant="ghost" size="icon" disabled={updatingStatus === community.id} className="h-8 w-8">
                               {updatingStatus === community.id ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
@@ -179,15 +179,25 @@ export function AdminCommunities() {
               </table>
             </div>
 
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Page {page} of {totalPages}
               </p>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setPage((p) => Math.max(1, p - 1))} 
+                  disabled={page === 1}
+                  className="flex-1 sm:flex-initial text-xs sm:text-sm"
+                >
                   Previous
                 </Button>
-                <Button variant="outline" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))} 
+                  disabled={page === totalPages}
+                  className="flex-1 sm:flex-initial text-xs sm:text-sm"
+                >
                   Next
                 </Button>
               </div>

@@ -21,10 +21,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     // Use service role client for admin operations to bypass RLS
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
 
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return NextResponse.json({ error: "Server configuration error" }, { status: 500 })
+    if (!supabaseUrl) {
+      return NextResponse.json({ error: "Missing NEXT_PUBLIC_SUPABASE_URL" }, { status: 500 })
+    }
+
+    if (!supabaseServiceKey) {
+      return NextResponse.json({ 
+        error: "Missing SUPABASE_SERVICE_ROLE_KEY. Please add it to your .env file." 
+      }, { status: 500 })
     }
 
     const supabaseAdmin = createServiceClient(supabaseUrl, supabaseServiceKey)

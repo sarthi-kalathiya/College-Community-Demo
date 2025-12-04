@@ -19,10 +19,10 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage users, communities, and view platform statistics</p>
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage users, communities, and view platform statistics</p>
         </div>
         <AdminDashboard />
       </div>

@@ -88,13 +88,20 @@ export function CommunityFeed({ communityId, userId, userProfile, isCreator }: C
 
     setIsSubmitting(true)
 
-    await supabase.from("posts").insert({
+    const { error } = await supabase.from("posts").insert({
       community_id: communityId,
       author_id: userId,
       content: newPostContent.trim(),
     })
 
-    setNewPostContent("")
+    if (!error) {
+      setNewPostContent("")
+      // Immediately refresh posts to show the new post
+      await fetchPosts()
+      // Refresh the page to update server-side data (member count, leaderboard, etc.)
+      router.refresh()
+    }
+
     setIsSubmitting(false)
   }
 
@@ -111,10 +118,15 @@ export function CommunityFeed({ communityId, userId, userProfile, isCreator }: C
 
   const handleDelete = async (postId: string) => {
     await supabase.from("posts").delete().eq("id", postId)
+    // Refresh posts after deletion
+    await fetchPosts()
+    router.refresh()
   }
 
   const handlePin = async (postId: string, isPinned: boolean) => {
     await supabase.from("posts").update({ is_pinned: !isPinned }).eq("id", postId)
+    // Refresh posts after pinning/unpinning
+    await fetchPosts()
   }
 
   if (isLoading) {

@@ -29,11 +29,11 @@ export function AdminDashboard() {
 
   return (
     <Tabs defaultValue="stats" className="w-full">
-      <TabsList className="grid w-full grid-cols-4">
-        <TabsTrigger value="stats">Overview</TabsTrigger>
-        <TabsTrigger value="users">Users</TabsTrigger>
-        <TabsTrigger value="communities">Communities</TabsTrigger>
-        <TabsTrigger value="transactions">Transactions</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 overflow-x-auto">
+        <TabsTrigger value="stats" className="text-xs sm:text-sm">Overview</TabsTrigger>
+        <TabsTrigger value="users" className="text-xs sm:text-sm">Users</TabsTrigger>
+        <TabsTrigger value="communities" className="text-xs sm:text-sm">Communities</TabsTrigger>
+        <TabsTrigger value="transactions" className="text-xs sm:text-sm">Transactions</TabsTrigger>
       </TabsList>
 
       <TabsContent value="stats" className="mt-6">
